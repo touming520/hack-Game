@@ -1,0 +1,1616 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>迷你外挂下载站</title>
+    <style>
+    :root {
+      --primary-color: #1e90ff;
+      /* page and component colors for light theme */
+      --page-bg: #ffffff;
+      --header-bg: rgba(255, 255, 255, 0.95);
+      --footer-bg: linear-gradient(to right, #ffffff, #f7f9fc);
+      --card-bg: rgba(255, 255, 255, 0.9);
+      --card-border: rgba(0,0,0,0.06);
+      --card-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+      --header-border: rgba(30, 144, 255, 0.12);
+      --header-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+      --text-primary: #111111;
+      --text-muted: #6b7280;
+      --accent-color: #00bfff;
+      --toggle-bg: rgba(0,0,0,0.06);
+      --toggle-color: #111111;
+      /* fallback (legacy) variables kept for compatibility */
+      --dark-bg: var(--page-bg);
+      --text-light: var(--text-primary);
+      --text-gray: var(--text-muted);
+    }
+
+    /* Dark theme overrides when data-theme="dark" is set on the <html> element */
+    html[data-theme="dark"] {
+      --page-bg: #0a0e17;
+      --header-bg: rgba(10, 14, 23, 0.95);
+      --footer-bg: linear-gradient(to right, #000000, #1a1a1a);
+      --card-bg: rgba(30, 30, 45, 0.8);
+      --card-border: rgba(255,255,255,0.06);
+      --card-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
+      --header-border: rgba(30, 144, 255, 0.3);
+      --header-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+      --text-primary: #ffffff;
+      --text-muted: #cccccc;
+      --toggle-bg: rgba(255,255,255,0.06);
+      --toggle-color: #ffffff;
+      --dark-bg: #0a0e17;
+      --text-light: #ffffff;
+      --text-gray: #cccccc;
+    }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      /* Use CSS variables so theme toggles can update these */
+      background-color: var(--page-bg);
+      color: var(--text-primary);
+      display: flex;
+      flex-direction: column;
+      cursor: none;
+      overflow-x: hidden;
+    }
+
+  .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 80px;
+            /* header background follows theme variable */
+            background: var(--header-bg);
+      backdrop-filter: blur(6px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      box-sizing: border-box;
+      transition: transform 0.3s ease;
+      border-bottom: 1px solid var(--header-border);
+      box-shadow: var(--header-shadow);
+    }
+
+        .software-name {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-shadow: 0 0 15px rgba(30, 144, 255, 0.8);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .software-name:hover {
+            transform: scale(1.05);
+            text-shadow: 0 0 20px rgba(30, 144, 255, 1);
+        }
+
+    .version-badge {
+      background: rgba(30, 144, 255, 0.08);
+      color: var(--primary-color);
+      padding: 3px 8px;
+      border-radius: 5px;
+      font-size: 0.8rem;
+      backdrop-filter: blur(3px);
+    }
+
+        .top-right-buttons {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+    /* Theme toggle button styles */
+    .theme-toggle {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: none;
+      background: var(--toggle-bg);
+      color: var(--toggle-color);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+      transition: transform 0.18s ease, background 0.18s ease, color 0.18s ease;
+    }
+
+    .theme-toggle:hover { transform: scale(1.05); }
+
+
+    .join-btn {
+      padding: 0.6rem 1.2rem;
+      font-size: 1.1rem;
+      font-weight: bold;
+      /* Button text should remain white on blue background */
+      color: #ffffff;
+      background-color: var(--primary-color);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      height: 45px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 4px 10px rgba(30, 144, 255, 0.18);
+    }
+
+        .join-btn:hover {
+            background-color: #0077CC;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(30, 144, 255, 0.5);
+        }
+
+        .main-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 100px 40px 40px;
+            margin-top: 80px;
+        }
+
+  .ice-cursor {
+      position: fixed;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+            background: rgba(173, 216, 230, 0.18);
+            /* Use a subtle border that adapts via currentColor */
+            border: 2px solid rgba(0, 0, 0, 0.12);
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: 
+        width 0.3s ease, 
+        height 0.3s ease, 
+        background 0.3s ease,
+        border 0.3s ease;
+      box-shadow: 
+        0 0 8px rgba(173, 216, 230, 0.25),
+        inset 0 0 6px rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(2px);
+    }
+
+        .ice-cursor::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 8px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .ice-cursor.active {
+            width: 60px;
+            height: 60px;
+            background: rgba(173, 216, 230, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+
+        .hero-section {
+            display: flex;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 60px;
+            gap: 40px;
+        }
+
+        .left-content {
+            text-align: left;
+            max-width: 50%;
+        }
+
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 0.5rem;
+      color: var(--text-light);
+      background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            color: var(--text-gray);
+            line-height: 1.6;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            color: #121212;
+            background-color: var(--primary-color);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn:hover {
+            background-color: #0077cc;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .right-content {
+            display: flex;
+            justify-content: center;
+            width: 50%;
+            position: relative;
+        }
+
+        .bilibili-video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(30, 144, 255, 0.3);
+        }
+
+        .bilibili-video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 10px;
+        }
+
+        .online-badge {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            background: rgba(30, 144, 255, 0.2);
+            color: var(--primary-color);
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .online-dot {
+            width: 8px;
+            height: 8px;
+            background: #00ff00;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+
+        .features-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            width: 100%;
+            max-width: 1200px;
+            margin: 40px auto;
+        }
+
+  .feature-box {
+      flex: 1 1 300px;
+            background: var(--card-bg);
+      border-radius: 15px;
+      padding: 30px;
+            /* box-shadow follows variable */
+            box-shadow: var(--card-shadow);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      border: 1px solid var(--card-border);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+        .feature-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+        }
+
+        .feature-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(30, 144, 255, 0.4);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+        }
+
+        .feature-image {
+            width: 100%;
+            max-width: 200px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .feature-text {
+            text-align: center;
+        }
+
+        .feature-text h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+    .feature-text p {
+      font-size: 1.1rem;
+      color: #444444;
+      line-height: 1.7;
+    }
+
+        .feature-list {
+            text-align: left;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .feature-list ul {
+            padding-left: 20px;
+        }
+
+        .feature-list li {
+            margin-bottom: 8px;
+            color: var(--text-gray);
+        }
+
+    .footer {
+      background: linear-gradient(to right, #ffffff, #f7f9fc);
+      padding: 30px 0;
+      text-align: center;
+      border-top: 1px solid rgba(0, 0, 0, 0.06);
+      margin-top: 60px;
+    }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+    .footer-links a {
+      color: #444444;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+        .footer-links a:hover {
+            color: var(--primary-color);
+        }
+
+    .footer-info {
+      color: #6b7280;
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+        .footer-icp {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: #aaaaaa;
+        }
+
+        .footer-icp a {
+            color: var(--primary-color);
+            text-decoration: none;
+            margin: 0 5px;
+        }
+
+        .horizontal-feature {
+            width: 100%;
+            max-width: 1200px;
+            margin: 60px auto;
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .horizontal-feature-image {
+            flex: 1;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .horizontal-feature-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.5s ease;
+        }
+
+        .horizontal-feature-image:hover img {
+            transform: scale(1.05);
+        }
+
+        .horizontal-feature-text {
+            flex: 1;
+        }
+
+        .highlight {
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .hero-section {
+                flex-direction: column;
+                text-align: center;
+                gap: 40px;
+            }
+
+            .left-content {
+                max-width: 100%;
+            }
+
+            .feature-box {
+                flex: 1 1 100%;
+            }
+
+            .bilibili-video-container {
+                width: 100%;
+                padding-bottom: 56.25%;
+            }
+
+            h1 {
+                font-size: 2.2rem;
+            }
+
+            .footer-links {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .horizontal-feature {
+                flex-direction: column !important;
+                gap: 20px;
+            }
+
+            .horizontal-feature-image, 
+            .horizontal-feature-text {
+                flex: 1 1 100% !important;
+            }
+
+            .horizontal-feature-text {
+                text-align: center;
+            }
+        }
+
+        .floating-info {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(30, 144, 255, 0.2);
+            color: var(--primary-color);
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+    </style>
+<style data-id="immersive-translate-input-injected-css">.immersive-translate-input {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 2147483647;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.immersive-translate-attach-loading::after {
+  content: " ";
+
+  --loading-color: #f78fb6;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: block;
+  margin: 12px auto;
+  position: relative;
+  color: white;
+  left: -100px;
+  box-sizing: border-box;
+  animation: immersiveTranslateShadowRolling 1.5s linear infinite;
+
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-2000%, -50%);
+  z-index: 100;
+}
+
+.immersive-translate-loading-spinner {
+  vertical-align: middle !important;
+  width: 10px !important;
+  height: 10px !important;
+  display: inline-block !important;
+  margin: 0 4px !important;
+  border: 2px rgba(221, 244, 255, 0.6) solid !important;
+  border-top: 2px rgba(0, 0, 0, 0.375) solid !important;
+  border-left: 2px rgba(0, 0, 0, 0.375) solid !important;
+  border-radius: 50% !important;
+  padding: 0 !important;
+  -webkit-animation: immersive-translate-loading-animation 0.6s infinite linear !important;
+  animation: immersive-translate-loading-animation 0.6s infinite linear !important;
+}
+
+@-webkit-keyframes immersive-translate-loading-animation {
+  from {
+    -webkit-transform: rotate(0deg);
+  }
+
+  to {
+    -webkit-transform: rotate(359deg);
+  }
+}
+
+@keyframes immersive-translate-loading-animation {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(359deg);
+  }
+}
+
+.immersive-translate-input-loading {
+  --loading-color: #f78fb6;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: block;
+  margin: 12px auto;
+  position: relative;
+  color: white;
+  left: -100px;
+  box-sizing: border-box;
+  animation: immersiveTranslateShadowRolling 1.5s linear infinite;
+}
+
+@keyframes immersiveTranslateShadowRolling {
+  0% {
+    box-shadow: 0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0),
+      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
+  }
+
+  12% {
+    box-shadow: 100px 0 var(--loading-color), 0px 0 rgba(255, 255, 255, 0),
+      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
+  }
+
+  25% {
+    box-shadow: 110px 0 var(--loading-color), 100px 0 var(--loading-color),
+      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
+  }
+
+  36% {
+    box-shadow: 120px 0 var(--loading-color), 110px 0 var(--loading-color),
+      100px 0 var(--loading-color), 0px 0 rgba(255, 255, 255, 0);
+  }
+
+  50% {
+    box-shadow: 130px 0 var(--loading-color), 120px 0 var(--loading-color),
+      110px 0 var(--loading-color), 100px 0 var(--loading-color);
+  }
+
+  62% {
+    box-shadow: 200px 0 rgba(255, 255, 255, 0), 130px 0 var(--loading-color),
+      120px 0 var(--loading-color), 110px 0 var(--loading-color);
+  }
+
+  75% {
+    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
+      130px 0 var(--loading-color), 120px 0 var(--loading-color);
+  }
+
+  87% {
+    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
+      200px 0 rgba(255, 255, 255, 0), 130px 0 var(--loading-color);
+  }
+
+  100% {
+    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
+      200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0);
+  }
+}
+
+.immersive-translate-toast {
+  display: flex;
+  position: fixed;
+  z-index: 2147483647;
+  left: 0;
+  right: 0;
+  top: 1%;
+  width: fit-content;
+  padding: 12px 20px;
+  margin: auto;
+  overflow: auto;
+  background: #fef6f9;
+  box-shadow: 0px 4px 10px 0px rgba(0, 10, 30, 0.06);
+  font-size: 15px;
+  border-radius: 8px;
+  color: #333;
+}
+
+.immersive-translate-toast-content {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.immersive-translate-toast-hidden {
+  margin: 0 20px 0 72px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.immersive-translate-toast-close {
+  color: #666666;
+  font-size: 20px;
+  font-weight: bold;
+  padding: 0 10px;
+  cursor: pointer;
+}
+
+@media screen and (max-width: 768px) {
+  .immersive-translate-toast {
+    top: 0;
+    padding: 12px 0px 0 10px;
+  }
+  .immersive-translate-toast-content {
+    flex-direction: column;
+    text-align: center;
+  }
+  .immersive-translate-toast-hidden {
+    margin: 10px auto;
+  }
+}
+
+.immersive-translate-dialog {
+  position: fixed;
+  z-index: 2147483647;
+  left: 0;
+  top: 0;
+  display: flex;
+  width: 300px;
+  flex-direction: column;
+  align-items: center;
+  font-size: 15px;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  height: fit-content;
+  border-radius: 20px;
+  background-color: #fff;
+}
+
+.immersive-translate-modal {
+  display: none;
+  position: fixed;
+  z-index: 2147483647;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.4);
+  font-size: 15px;
+}
+
+.immersive-translate-modal-content {
+  background-color: #fefefe;
+  margin: 10% auto;
+  padding: 40px 24px 24px;
+  border-radius: 12px;
+  width: 350px;
+  font-family: system-ui, -apple-system, "Segoe UI", "Roboto", "Ubuntu",
+    "Cantarell", "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol", "Noto Color Emoji";
+  position: relative;
+}
+
+@media screen and (max-width: 768px) {
+  .immersive-translate-modal-content {
+    margin: 25% auto !important;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .immersive-translate-modal-content {
+    width: 80vw !important;
+    margin: 20vh auto !important;
+    padding: 20px 12px 12px !important;
+  }
+
+  .immersive-translate-modal-title {
+    font-size: 14px !important;
+  }
+
+  .immersive-translate-modal-body {
+    font-size: 13px !important;
+    max-height: 60vh !important;
+  }
+
+  .immersive-translate-btn {
+    font-size: 13px !important;
+    padding: 8px 16px !important;
+    margin: 0 4px !important;
+  }
+
+  .immersive-translate-modal-footer {
+    gap: 6px !important;
+    margin-top: 16px !important;
+  }
+}
+
+.immersive-translate-modal .immersive-translate-modal-content-in-input {
+  max-width: 500px;
+}
+.immersive-translate-modal-content-in-input .immersive-translate-modal-body {
+  text-align: left;
+  max-height: unset;
+}
+
+.immersive-translate-modal-title {
+  text-align: center;
+  font-size: 16px;
+  font-weight: 700;
+  color: #333333;
+}
+
+.immersive-translate-modal-body {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 400;
+  color: #333333;
+  margin-top: 24px;
+  word-break: break-all;
+}
+
+@media screen and (max-width: 768px) {
+  .immersive-translate-modal-body {
+    max-height: 250px;
+    overflow-y: auto;
+  }
+}
+
+.immersive-translate-close {
+  color: #666666;
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.immersive-translate-close:hover,
+.immersive-translate-close:focus {
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.immersive-translate-modal-footer {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 24px;
+}
+
+.immersive-translate-btn {
+  width: fit-content;
+  color: #fff;
+  background-color: #ea4c89;
+  border: none;
+  font-size: 14px;
+  margin: 0 8px;
+  padding: 9px 30px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.immersive-translate-btn-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.immersive-translate-btn:hover {
+  background-color: #f082ac;
+}
+.immersive-translate-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.immersive-translate-btn:disabled:hover {
+  background-color: #ea4c89;
+}
+
+.immersive-translate-link-btn {
+  background-color: transparent;
+  color: #ea4c89;
+  border: none;
+  cursor: pointer;
+  height: 30px;
+  line-height: 30px;
+}
+
+.immersive-translate-cancel-btn {
+  /* gray color */
+  background-color: rgb(89, 107, 120);
+}
+
+.immersive-translate-cancel-btn:hover {
+  background-color: hsl(205, 20%, 32%);
+}
+
+.immersive-translate-action-btn {
+  background-color: transparent;
+  color: #ea4c89;
+  border: 1px solid #ea4c89;
+}
+
+.immersive-translate-btn svg {
+  margin-right: 5px;
+}
+
+.immersive-translate-link {
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-drag: none;
+  text-decoration: none;
+  color: #ea4c89;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+}
+
+.immersive-translate-primary-link {
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-drag: none;
+  text-decoration: none;
+  color: #ea4c89;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+}
+
+.immersive-translate-modal input[type="radio"] {
+  margin: 0 6px;
+  cursor: pointer;
+}
+
+.immersive-translate-modal label {
+  cursor: pointer;
+}
+
+.immersive-translate-close-action {
+  position: absolute;
+  top: 2px;
+  right: 0px;
+  cursor: pointer;
+}
+
+.imt-image-status {
+  background-color: rgba(0, 0, 0, 0.5) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 16px !important;
+}
+.imt-image-status img,
+.imt-image-status svg,
+.imt-img-loading {
+  width: 28px !important;
+  height: 28px !important;
+  margin: 0 0 8px 0 !important;
+  min-height: 28px !important;
+  min-width: 28px !important;
+  position: relative !important;
+}
+.imt-img-loading {
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADgAAAA4CAMAAACfWMssAAAAtFBMVEUAAAD////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////oK74hAAAAPHRSTlMABBMIDyQXHwyBfFdDMSw+OjXCb+5RG51IvV/k0rOqlGRM6KKMhdvNyZBz9MaupmxpWyj437iYd/yJVNZeuUC7AAACt0lEQVRIx53T2XKiUBCA4QYOiyCbiAsuuGBcYtxiYtT3f6/pbqoYHVFO5r+iivpo6DpAWYpqeoFfr9f90DsYAuRSWkFnPO50OgR9PwiCUFcl2GEcx+N/YBh6pvKaefHlUgZd1zVe0NbYcQjGBfzrPE8Xz8aF+71D8gG6DHFPpc4a7xFiCDuhaWgKgGIJQ3d5IMGDrpS4S5KgpIm+en9f6PlAhKby4JwEIxlYJV9h5k5nee9GoxHJ2IDSNB0dwdad1NAxDJ/uXDHYmebdk4PdbkS58CIVHdYSUHTYYRWOJblWSyu2lmy3KNFVJNBhxcuGW4YBVCbYGRZwIooipHsNqjM4FbgOQqQqSKQQU9V8xmi1QlgHqQQ6DDBvRUVCDirs+EzGDGOQTCATgtYTnbCVLgsVgRE0T1QE0qHCFAht2z6dLvJQs3Lo2FQoDxWNUiBhaP4eRgwNkI+dAjVOA/kUrIDwf3CG8NfNOE0eiFotSuo+rBiq8tD9oY4Qzc6YJw99hl1wzpQvD7ef2M8QgnOGJfJw+EltQc+oX2yn907QB22WZcvlUpd143dqQu+8pCJZuGE4xCuPXJqqcs5sNpsI93Rmzym1k4Npk+oD1SH3/a3LOK/JpUBpWfqNySxWzCfNCUITuDG5dtuphrUJ1myeIE9bIsPiKrfqTai5WZxbhtNphYx6GEIHihyGFTI69lje/rxajdh0s0msZ0zYxyPLhYCb1CyHm9Qsd2H37Y3lugVwL9kNh8Ot8cha6fUNQ8nuXi5z9/ExsAO4zQrb/ev1yrCB7lGyQzgYDGuxq1toDN/JGvN+HyWNHKB7zEoK+PX11e12G431erGYzwmytAWU56fkMHY5JJnDRR2eZji3AwtIcrEV8Cojat/BdQ7XOwGV1e1hDjGGjXbdArm8uJZtCH5MbcctVX8A1WpqumJHwckAAAAASUVORK5CYII=");
+  background-size: 28px 28px;
+  animation: image-loading-rotate 1s linear infinite !important;
+}
+
+.imt-image-status span {
+  color: var(--bg-2, #fff) !important;
+  font-size: 14px !important;
+  line-height: 14px !important;
+  font-weight: 500 !important;
+  font-family: "PingFang SC", Arial, sans-serif !important;
+}
+
+.imt-primary-button {
+  display: flex;
+  padding: 12px 80px;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  border-radius: 8px;
+  background: #ea4c89;
+  color: #fff;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 24px;
+  border: none;
+  cursor: pointer;
+}
+
+.imt-retry-text {
+  color: #999;
+  text-align: center;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 21px;
+  cursor: pointer;
+}
+
+.imt-action-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.imt-modal-content-text {
+  text-align: left;
+  color: #333;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+}
+
+@keyframes image-loading-rotate {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+.imt-linear-gradient-text {
+  background: linear-gradient(90deg, #00a6ff 0%, #c369ff 52.4%, #ff4590 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.imt-flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.imt-linear-black-btn {
+  border-radius: 50px;
+  background: linear-gradient(66deg, #222 19%, #696969 94.25%);
+  height: 48px;
+  width: 100%;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  justify-content: center;
+}
+</style></head>
+<body>
+    <!-- 顶部标题栏 -->
+    <header class="header" id="header" style="transform: translateY(0px);">
+        <div class="software-name">
+           迷你外挂下载站 <span class="version-badge">fuck mini</span>
+        </div>
+    <div class="top-right-buttons">
+      <!-- CPU usage display -->
+      <div class="cpu-display" id="cpuDisplay" title="近似浏览器CPU占用">
+        <div class="cpu-label">CPU</div>
+        <div class="cpu-bar" aria-hidden="true">
+          <div class="cpu-fill" id="cpuFill" style="width: 9%;"></div>
+        </div>
+        <div class="cpu-percent" id="cpuPercent">9%</div>
+      </div>
+
+      <!-- Theme toggle button -->
+      <!-- Local time display -->
+      <div style="display:inline-flex;align-items:center;gap:8px">
+        <div class="clock-display" id="clockDisplay" title="同步时间">16:46:35</div>
+        <div id="clockSyncStatus" title="同步状态" style="font-size: 0.78rem; opacity: 0.6; color: var(--text-muted);">已过期</div>
+      </div>
+
+      <button id="themeToggle" class="theme-toggle" aria-label="切换主题" title="切换暗/亮模式" aria-pressed="false">
+        <span id="themeIcon">☀️</span>
+      </button>
+    </div>
+
+  <script>
+    (function () {
+      const THEME_KEY = 'preferred-theme';
+      const toggleBtn = document.getElementById('themeToggle');
+      const themeIcon = document.getElementById('themeIcon');
+
+      function applyTheme(theme) {
+        if (theme === 'dark') {
+          document.documentElement.setAttribute('data-theme', 'dark');
+          themeIcon.textContent = '🌙';
+          toggleBtn.setAttribute('aria-pressed', 'true');
+        } else {
+          document.documentElement.removeAttribute('data-theme');
+          themeIcon.textContent = '☀️';
+          toggleBtn.setAttribute('aria-pressed', 'false');
+        }
+      }
+
+      // Initialize from localStorage or system preference
+      let saved = null;
+      try { saved = localStorage.getItem(THEME_KEY); } catch (e) { /* ignore */ }
+
+      if (saved) {
+        applyTheme(saved);
+      } else {
+        // fallback to prefers-color-scheme
+        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        applyTheme(prefersDark ? 'dark' : 'light');
+      }
+
+      toggleBtn.addEventListener('click', function () {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        const next = isDark ? 'light' : 'dark';
+        applyTheme(next);
+        try { localStorage.setItem(THEME_KEY, next); } catch (e) { /* ignore */ }
+      });
+    })();
+  </script>
+    </header>
+
+  <script>
+    (function () {
+      // Improved CPU estimator: per-frame instant usage with EMA smoothing.
+      // Note: this measures main-thread activity for this page (not system CPU).
+      const fill = document.getElementById('cpuFill');
+      const percent = document.getElementById('cpuPercent');
+      if (!fill || !percent) return;
+
+      let last = performance.now();
+      let ema = 0; // exponential moving average of usage (0..1)
+      const alpha = 0.18; // smoothing factor (0..1) - higher = more responsive
+      let rafId = null;
+
+      function loop(now) {
+        // If last is far in the past (tab was hidden), reset baseline
+        if (now - last > 2000) {
+          last = now;
+        }
+
+        const delta = Math.max(0, now - last);
+        // instant usage: portion of the frame that exceeded ideal 16ms
+        const instant = delta > 0 ? Math.min(1, Math.max(0, (delta - 16) / delta)) : 0;
+        // update EMA
+        ema = alpha * instant + (1 - alpha) * ema;
+        last = now;
+        rafId = requestAnimationFrame(loop);
+      }
+
+      rafId = requestAnimationFrame(loop);
+
+      // Update UI frequently for responsive feel
+      setInterval(function () {
+        const pct = Math.round(ema * 100);
+        fill.style.width = pct + '%';
+        percent.textContent = pct + '%';
+      }, 250);
+
+      // Pause or reset when page hidden to avoid sticky high values
+      document.addEventListener('visibilitychange', function () {
+        if (document.hidden) {
+          // gently nudge ema down while hidden
+          ema *= 0.2;
+        } else {
+          last = performance.now();
+        }
+      });
+
+      // cleanup on unload
+      window.addEventListener('beforeunload', function () { if (rafId) cancelAnimationFrame(rafId); });
+    })();
+  </script>
+  <script>
+    (function () {
+      const clock = document.getElementById('clockDisplay');
+      const status = document.getElementById('clockSyncStatus');
+      if (!clock) return;
+
+      function pad(n) { return n < 10 ? '0' + n : n; }
+
+      // server sync state: offset = serverTime - localTime (ms)
+      let offset = 0;
+      let lastSync = 0;
+
+      async function syncTime() {
+        const url = 'https://worldtimeapi.org/api/ip';
+        try {
+          const t0 = performance.now();
+          const resp = await fetch(url, {cache: 'no-store'});
+          const t1 = performance.now();
+          if (!resp.ok) throw new Error('http ' + resp.status);
+          const data = await resp.json();
+          // worldtimeapi returns unix time in seconds and datetime strings
+          const serverUnix = (data.unixtime || Math.floor(new Date(data.datetime).getTime()/1000));
+          const serverMs = serverUnix * 1000 + (data.datetime ? (new Date(data.datetime).getMilliseconds() || 0) : 0);
+          const rtt = t1 - t0; // ms
+          const approxServerNow = serverMs + rtt / 2; // assume symmetric
+          const localNow = Date.now();
+          offset = approxServerNow - localNow;
+          lastSync = Date.now();
+          status.textContent = '已同步';
+          status.style.opacity = '0.85';
+        } catch (e) {
+          // fallback: show offline and keep previous offset
+          status.textContent = '离线';
+          status.style.opacity = '0.6';
+        }
+      }
+
+      function getSyncedDate() {
+        return new Date(Date.now() + offset);
+      }
+
+      function updateClock() {
+        const d = getSyncedDate();
+        clock.textContent = pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+        // if last sync was long ago, mark stale
+        if (Date.now() - lastSync > 1000 * 60 * 15) {
+          status.textContent = '已过期';
+          status.style.opacity = '0.6';
+        }
+      }
+
+      // Initial sync, then periodic
+      syncTime();
+      setInterval(syncTime, 1000 * 60 * 10); // every 10 minutes
+
+      let timer = null;
+      function start() { updateClock(); if (!timer) timer = setInterval(updateClock, 1000); }
+      function stop() { if (timer) { clearInterval(timer); timer = null; } }
+      document.addEventListener('visibilitychange', function () { if (document.hidden) stop(); else start(); });
+      start();
+      window.addEventListener('beforeunload', stop);
+    })();
+  </script>
+
+    <style>
+      /* CPU display widget styles */
+      .cpu-display {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: rgba(0,0,0,0.04);
+        color: var(--text-primary);
+        font-size: 0.85rem;
+        border: 1px solid rgba(0,0,0,0.04);
+      }
+
+      .cpu-label { font-weight: 600; opacity: 0.8; }
+
+      .cpu-bar {
+        width: 80px;
+        height: 8px;
+        background: rgba(0,0,0,0.06);
+        border-radius: 6px;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .cpu-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #34d399, #10b981);
+        width: 6%;
+        transition: width 300ms linear, background 300ms linear;
+      }
+
+      .cpu-percent { min-width: 36px; text-align: right; font-weight: 700; }
+
+      /* Dark theme adjustments */
+      html[data-theme="dark"] .cpu-display {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.04);
+      }
+      html[data-theme="dark"] .cpu-bar { background: rgba(255,255,255,0.04); }
+      html[data-theme="dark"] .cpu-fill { background: linear-gradient(90deg, #60a5fa, #3b82f6); }
+      
+      /* Clock display */
+      .clock-display {
+        font-weight: 700;
+        padding: 6px 10px;
+        border-radius: 8px;
+        background: transparent;
+        color: var(--text-primary);
+        font-size: 0.95rem;
+      }
+    </style>
+
+    
+    <div class="ice-cursor" id="iceCursor" style="left: 668px; top: 183px; width: 30px; height: 30px; background: rgba(173, 216, 230, 0.3);"></div>
+
+    
+    <div class="main-container">
+        <div class="hero-section">
+            
+            <div class="left-content">
+                <h1>我们提供什么</h1>
+                <p id="random-quote">我们提供最新的迷你辅助，付费和免费都有提供</p>
+                <button class="btn" onclick="window.open('https://github.com/touming520/fuck-miniworld/tree/main')">前往下载</button>
+            </div>
+
+            
+            
+        </div>
+
+        
+        <div class="features-container">
+            <!-- 功能1 -->
+            <div class="feature-box">
+                <div class="feature-icon">🤣</div>
+                <div class="feature-text">
+                    <h2>暖安mini</h2>
+                    <p>目前半免费的辅助</p>
+                    <div class="feature-list">
+                        <ul>
+                            <li><span class="highlight">平平无奇</span> - 更新慢，没优点</li>
+                            <li><span class="highlight">贵的要死的ACE</span> - 一个9.9死贵</li>
+                            <li><span class="highlight">容易失效</span> - 爱怎么失效了</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 功能2 -->
+            <div class="feature-box">
+                <div class="feature-icon">👽</div>
+                <div class="feature-text">
+                    <h2>MRPOL CHEATS</h2>
+                    <p>超级好用的辅助(有时公益)</p>
+                    <div class="feature-list">
+                        <ul>
+                            <li><span class="highlight">好用不多说</span> - 逆天般的云服功能</li>
+                            <li><span class="highlight">属性功能</span> - 调整乱七八糟的玩意</li>
+                            <li><span class="highlight">修改模式</span> - 理论全可改</li>
+                            <li><span class="highlight">枪械与人物</span> - 对某些地图特有效</li>
+                            <li><span class="highlight">局内改名</span> - 应该可以改违禁名</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 功能3 -->
+            <div class="feature-box">
+                <div class="feature-icon">😎</div>
+                <div class="feature-text">
+                    <h2>砺行Mini SVIP</h2>
+                    <p>神秘暴力云服挂(很贵但是有破解版)</p>
+                    <div class="feature-list">
+                        <ul>
+                            <li><span class="highlight">联机防踢</span> - 防止在多人游戏中被踢出</li>
+                            <li><span class="highlight">崩服/单崩</span> - 高级服务器控制功能</li>
+                            <li><span class="highlight">远程控人</span> - 远程控制其他玩家角色</li>
+                            <li><span class="highlight">获取敌人数据</span> - 实时获取对手信息</li>
+                            <li><span class="highlight">H键进自定义地图</span> - 快速进入特定地图</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 功能4 -->
+            <div class="feature-box">
+                <div class="feature-icon">💥</div>
+                <div class="feature-text">
+                    <h2>Draw World</h2>
+                    <p>超级牛逼屌炸天外挂还免费</p>
+                    <div class="feature-list">
+                        <ul>
+                            <li><span class="highlight">超级强的绘制</span> - D3D到openGL或内核应有尽有</li>
+                            <li><span class="highlight">杀戮光环</span> - 全部辅助里算是免费还好用的</li>
+                            <li><span class="highlight">UI HOOK</span> - 超级逆天的Hook</li>
+                            <li><span class="highlight">世界颜色</span> - 自定义游戏世界颜色和RGB值</li>
+                            <li><span class="highlight">性能优化</span> - 给运行的石山优化</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 功能5 -->
+            <div class="feature-box">
+                <div class="feature-icon">😵</div>
+                <div class="feature-text">
+                    <h2>Dekomy.dll</h2>
+                    <p>目前需要纸飞机才好用的辅助</p>
+                    <div class="feature-list">
+                        <ul>
+                            <li><span class="highlight">添加宠物</span> - 在游戏中添加自定义宠物</li>
+                            <li><span class="highlight">热键设置</span> - 自定义快捷键操作</li>
+                            <li><span class="highlight">云端日志</span> - 记录和分析游戏数据</li>
+                            <li><span class="highlight">超级强的绘制</span> - 从远古版到最新版都可用</li>
+                            <li><span class="highlight">杀戮光环</span> - 全部辅助里算是免费还好用的</li>
+                            <li><span class="highlight">HOOK</span> - 还算好用</li>
+                            <li><span class="highlight">别问怎么这么多</span> - 这个是真tm好用</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 功能6 -->
+            <div class="feature-box">
+                <div class="feature-icon">🔄</div>
+                <div class="feature-text">
+                    <h2>快速更新</h2>
+                    <p>我们持续提供最新的辅助</p>
+                    <div class="feature-list">
+                        <ul>
+                            <li><span class="highlight">自动更新机制</span> - 确保功能稳定性和兼容性</li>
+                            <li><span class="highlight">多服务器支持</span> - 稳定的服务器连接</li>
+                            <li><span class="highlight">issues技术支持</span> - 稳定提供帮助</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+        
+
+        
+        
+    </div>
+
+    
+    
+
+    
+
+    
+
+    
+    <script>
+        // 薄冰特效鼠标跟随
+        const cursor = document.getElementById('iceCursor');
+        
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = `${e.clientX}px`;
+            cursor.style.top = `${e.clientY}px`;
+        });
+        
+        document.addEventListener('mousedown', () => {
+            cursor.classList.add('active');
+        });
+        
+        document.addEventListener('mouseup', () => {
+            cursor.classList.remove('active');
+        });
+
+        // 按钮悬停效果
+        const buttons = document.querySelectorAll('button, a.btn');
+        buttons.forEach(btn => {
+            btn.addEventListener('mouseenter', () => {
+                cursor.style.width = '40px';
+                cursor.style.height = '40px';
+                cursor.style.background = 'rgba(173, 216, 230, 0.5)';
+            });
+            btn.addEventListener('mouseleave', () => {
+                cursor.style.width = '30px';
+                cursor.style.height = '30px';
+                cursor.style.background = 'rgba(173, 216, 230, 0.3)';
+            });
+        });
+
+        // 页面滚动动画
+        let lastScroll = 0;
+        const header = document.getElementById('header');
+        
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset;
+            
+            if (currentScroll <= 0) {
+                header.style.transform = 'translateY(0)';
+                return;
+            }
+            
+            header.style.transform = currentScroll > lastScroll 
+                ? 'translateY(-100%)' 
+                : 'translateY(0)';
+            
+            lastScroll = currentScroll;
+        });
+
+        // 随机一言功能（保留原功能）
+        const quotes = [
+            "专业游戏辅助工具，提供卓越的游戏体验",
+            "安全稳定，持续更新，追求卓越",
+            "多功能集成，全面增强游戏能力",
+            "感谢您的支持！"
+        ];
+        
+        function getRandomQuote() {
+            const index = Math.floor(Math.random() * quotes.length);
+            document.getElementById("random-quote").textContent = quotes[index];
+        }
+        
+        window.addEventListener('DOMContentLoaded', getRandomQuote);
+
+        // 在线人数API接口地址 - 请替换为你的实际接口地址
+        // 注意：将下面的 'https://api.example.com/online-count' 替换为你的实际接口地址
+        // 该接口应返回纯数字，例如 "3"，不要有任何其他字符或格式
+        const ONLINE_COUNT_API = 'http://mrpol.tirji.top/count_ips.php'; // 请替换为链接1的实际地址
+
+        // 获取并更新在线人数
+        async function updateOnlineCount() {
+            try {
+                const response = await fetch(ONLINE_COUNT_API);
+                if (!response.ok) {
+                    throw new Error(`HTTP error: ${response.status}`);
+                }
+                
+                const data = await response.text();
+                const onlineCount = parseInt(data.trim());
+                
+                // 验证是否为有效数字
+                if (isNaN(onlineCount) || onlineCount < 0) {
+                    throw new Error('Invalid online count format');
+                }
+                
+                console.log('获取到在线人数:', onlineCount);
+                
+                // 更新页面上所有显示在线人数的元素
+                const badgeElement = document.getElementById('badge-online');
+                const floatElement = document.getElementById('float-online');
+                const footerElement = document.getElementById('footer-online');
+                
+                if (badgeElement) {
+                    badgeElement.textContent = onlineCount;
+                }
+                if (floatElement) {
+                    floatElement.textContent = onlineCount;
+                }
+                if (footerElement) {
+                    footerElement.textContent = onlineCount;
+                }
+                
+                // 同时更新原有的在线人数显示文本
+                const badgeContainer = document.querySelector('.online-badge span');
+                const floatContainer = document.querySelector('.floating-info span');
+                const footerContainer = document.querySelector('.footer-info p:nth-child(2)');
+                
+                if (badgeContainer) {
+                    badgeContainer.innerHTML = `服务器在线: ${onlineCount}人`;
+                }
+                if (floatContainer) {
+                    floatContainer.innerHTML = `MRPOL CHEATS | 在线: ${onlineCount}`;
+                }
+                if (footerContainer) {
+                    footerContainer.innerHTML = `© 2025 MRPOL CHEATS 版权所有<br>冰荆|服务器在线人数: ${onlineCount}`;
+                }
+                
+            } catch (error) {
+                console.error('获取在线人数失败:', error);
+                // 如果获取失败，可以选择显示默认值或不更新
+                // 例如，保持原来的数字 4 或者显示默认值 4
+                const defaultCount = 4;
+                console.log('使用默认在线人数:', defaultCount);
+                
+                // 你可以选择在这里更新为默认值，或者不做任何操作
+                /*
+                const badgeElement = document.getElementById('badge-online');
+                const floatElement = document.getElementById('float-online');
+                const footerElement = document.getElementById('footer-online');
+                
+                if (badgeElement) {
+                    badgeElement.textContent = defaultCount;
+                }
+                if (floatElement) {
+                    floatElement.textContent = defaultCount;
+                }
+                if (footerElement) {
+                    footerElement.textContent = defaultCount;
+                }
+                
+                const badgeContainer = document.querySelector('.online-badge span');
+                const floatContainer = document.querySelector('.floating-info span');
+                const footerContainer = document.querySelector('.footer-info p:nth-child(2)');
+                
+                if (badgeContainer) {
+                    badgeContainer.innerHTML = `服务器在线: ${defaultCount}人`;
+                }
+                if (floatContainer) {
+                    floatContainer.innerHTML = `MRPOL CHEATS V14.5 | 在线: ${defaultCount}`;
+                }
+                if (footerContainer) {
+                    footerContainer.innerHTML = `© 2025 MRPOL CHEATS 版权所有<br>当前版本: V14.5 | 服务器在线人数: ${defaultCount}`;
+                }
+                */
+            }
+        }
+
+        // 页面加载完成后立即获取一次在线人数
+        document.addEventListener('DOMContentLoaded', () => {
+            updateOnlineCount();
+            
+            // 每30秒更新一次在线人数
+            setInterval(updateOnlineCount, 30000);
+        });
+
+        // 原有的其他JavaScript功能保持不变
+    </script>
+
+</body>
